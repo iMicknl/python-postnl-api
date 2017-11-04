@@ -1,0 +1,127 @@
+openapi: 3.0.0
+
+info:
+  version: "1.0.0"
+  title: 'PostNL API (mobile)'
+  description: 'API used for the PostNL iOS app to track deliveries'
+  
+components:
+  securitySchemes:
+    bearerAuth:           
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      
+  responses:
+    UnauthorizedError:
+      description: Access token is missing or invalid
+  
+servers:
+  - url: https:/jouw.postnl.nl
+  
+paths:
+  /mobile/token:
+    post:
+      summary: Return a token
+      description: Retrieve a access and refresh token.
+      responses:
+        '200':  
+          description: Token
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  type: string  
+  
+  /mobile/api/orders:
+    get:
+      summary: Returns a list of orders.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':    
+          description: A JSON array of orders
+        '401':
+          description: Not authenticated
+          $ref: '#/components/responses/UnauthorizedError'
+  
+  /mobile/api/shipments:
+    get:
+      summary: Returns a list of shipments.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':    
+          description: A JSON array of orders
+        '401':
+          description: Not authenticated
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /mobile/api/shipments/{shipmentId}:
+    get:
+      summary: Returns a shipment by id
+      parameters:
+        - name: shipmentId
+          in: path
+          required: true
+          schema:
+            type : string
+            minimum: 1
+            
+      security:
+        - bearerAuth: []
+      responses:
+        '200':    
+          description: A JSON object of a specific order
+        '401':
+          description: Not authenticated
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /mobile/api/letters:
+    get:
+      summary: Returns a list of letters.
+      security:
+        - bearerAuth: []
+      responses:
+        '200':    
+          description: A JSON array of letters
+        '401':
+          description: Not authenticated
+          $ref: '#/components/responses/UnauthorizedError'
+          
+  /mobile/api/profile/device:
+    get:
+      summary: Returns profile information
+      security:
+        - bearerAuth: []
+      responses:
+        '200':    
+          description: Array
+        '401':
+          description: Not authenticated
+          $ref: '#/components/responses/UnauthorizedError'
+          
+  /mobile/api/notification:
+    post:
+      summary: ...
+      security:
+        - bearerAuth: []
+      responses:
+        '200':    
+          description: Array
+        '401':
+          description: Not authenticated
+          $ref: '#/components/responses/UnauthorizedError'
+
+  /mobile/api/location:
+    post:
+      summary: ...
+      security:
+        - bearerAuth: []
+      responses:
+        '200':    
+          description: Array
+        '401':
+          description: Not authenticated
+          $ref: '#/components/responses/UnauthorizedError'

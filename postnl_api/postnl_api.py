@@ -1,7 +1,7 @@
 """ Python wrapper for the PostNL API """
 
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 import requests
 
 BASE_URL = 'https://jouw.postnl.nl'
@@ -47,7 +47,8 @@ class PostNL_API(object):
 
         self._access_token = data['access_token']
         self._refresh_token = data['refresh_token']
-        self._token_expires_in = data['expires_in'] # TODO Add logic to refresh on invalidate
+        self._token_expires_in = data['expires_in']
+        self._token_expires_at = datetime.now() + timedelta(0, data['expires_in'])
 
     def refresh_token(self):
         """ Refresh access_token """
@@ -69,13 +70,11 @@ class PostNL_API(object):
         """ Retrieve shipments """
 
         headers = {
-            'api-version': '4.7',
-            'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
             'authorization': 'Bearer ' + self._access_token
         }
 
         response = requests.request(
-            'GET', SHIPMENTS_URL, headers=headers)
+            'GET', SHIPMENTS_URL, headers={**headers, **DEFAULT_HEADER})
 
         if response.status_code == 401:
             self.refresh_token()
@@ -172,11 +171,13 @@ class PostNL_API(object):
         response = requests.request(
             'GET', LETTERS_URL + '/' + letter_id, headers={**headers, **DEFAULT_HEADER})
 
-        if response.status_code == 401:
+        if response.status_code == 200:
+            letter = response.json()
+        elif response.status_code == 401:
             self.refresh_token()
             letter = self.get_letter(letter_id)
-        else:
-            letter = response.json()
+        else: 
+            raise Exception('Unknown Error')
 
         return letter
 

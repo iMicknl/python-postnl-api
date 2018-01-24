@@ -4,14 +4,13 @@ import logging
 from datetime import datetime
 import requests
 
-_LOGGER = logging.getLogger(__name__)
-
 BASE_URL = 'https://jouw.postnl.nl'
 
 AUTHENTICATE_URL = BASE_URL + '/mobile/token'
 SHIPMENTS_URL = BASE_URL + '/mobile/api/shipments'
 PROFILE_URL = BASE_URL + '/mobile/api/profile'
 LETTERS_URL = BASE_URL + '/mobile/api/letters'
+VALIDATE_LETTERS_URL = BASE_URL + '/mobile/api/letters/validation'
 
 class PostNL_API(object):
     """ Interface class for the PostNL API """
@@ -42,15 +41,14 @@ class PostNL_API(object):
             data = response.json()
 
         except Exception:
-            _LOGGER.exception('Credentials are wrong')
+            raise(Exception)
 
-        # if response['error']:
-        #     raise Exception(response['error']['error_description'])
+        if data['error']:
+            raise Exception(data['error'])
 
         self._access_token = data['access_token']
         self._refresh_token = data['refresh_token']
-        # TODO Add logic to refresh on invalidate
-        self._token_expires_in = data['expires_in']
+        self._token_expires_in = data['expires_in'] # TODO Add logic to refresh on invalidate
 
     def refresh_token(self):
         """ Refresh access_token """
@@ -133,6 +131,26 @@ class PostNL_API(object):
             profile = response.json()
 
         return profile
+
+    def validate_letters(self):
+        """ Retrieve letter validation status """
+
+        headers = {
+            'api-version': '4.7',
+            'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
+            'authorization': 'Bearer ' + self._access_token
+        }
+
+        response = requests.request(
+            'GET', VALIDATE_LETTERS_URL, headers=headers)
+
+        if response.status_code == 401:
+            self.refresh_token()
+            validation = self.validate_letters()
+        else:
+            validation = response.json()
+            
+        return validation
 
     def get_letters(self):
         """ Retrieve letters """

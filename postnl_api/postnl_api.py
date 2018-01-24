@@ -1,6 +1,4 @@
-"""
-Python wrapper for the PostNL API
-"""
+""" Python wrapper for the PostNL API """
 
 import logging
 from datetime import datetime
@@ -16,12 +14,10 @@ PROFILE_URL = BASE_URL + '/mobile/api/profile'
 LETTERS_URL = BASE_URL + '/mobile/api/letters'
 
 class PostNL_API(object):
-
-    """
-    Interface class for the PostNL API
-    """
+    """ Interface class for the PostNL API """
 
     def __init__(self, user, password):
+        """ Constructor """
 
         self._user = user
         self._password = password
@@ -39,19 +35,26 @@ class PostNL_API(object):
             'content-type': "application/x-www-form-urlencoded",
         }
 
-        response = requests.request(
-            'POST', AUTHENTICATE_URL, data=payload, headers=headers)
+        try:
+            response = requests.request(
+                'POST', AUTHENTICATE_URL, data=payload, headers=headers)
 
-        data = response.json()
+            data = response.json()
+
+        except Exception:
+            _LOGGER.exception('Credentials are wrong')
+            # return False
+
+        # if response['error']:
+        #     raise Exception(response['error']['error_description'])
 
         self._access_token = data['access_token']
         self._refresh_token = data['refresh_token']
-        self._token_expires_in = data['expires_in']  # TODO Add logic to refresh on invalidate
+        # TODO Add logic to refresh on invalidate
+        self._token_expires_in = data['expires_in']
 
-    """
-    Refresh access_token
-    """
     def refresh_token(self):
+        """ Refresh access_token """
 
         payload = {
             'grant_type': 'refresh_token',
@@ -72,10 +75,8 @@ class PostNL_API(object):
 
         self._access_token = data['access_token']
 
-    """
-    Retrieve shipments
-    """
     def get_shipments(self):
+        """ Retrieve shipments """
 
         headers = {
             'api-version': '4.6',
@@ -94,10 +95,28 @@ class PostNL_API(object):
 
         return shipments
 
-    """
-    Retrieve profile
-    """
+    def get_shipment(self, shipment_id):
+        """ Retrieve single shipment by id """
+
+        headers = {
+            'api-version': '4.6',
+            'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
+            'authorization': 'Bearer ' + self._access_token
+        }
+
+        response = requests.request(
+            'GET', SHIPMENTS_URL + '/' + shipment_id, headers=headers)
+
+        if response.status_code == 401:
+            self.refresh_token()
+            shipments = self.get_shipment(shipment_id)
+        else:
+            shipments = response.json()
+
+        return shipments
+
     def get_profile(self):
+        """ Retrieve profile """
 
         headers = {
             'api-version': '4.6',
@@ -116,10 +135,8 @@ class PostNL_API(object):
 
         return profile
 
-    """
-    Retrieve letters
-    """
     def get_letters(self):
+        """ Retrieve letters """
 
         headers = {
             'api-version': '4.6',
@@ -136,16 +153,35 @@ class PostNL_API(object):
         else:
             letters = response.json()
 
-        if letters['type'] == 'ProfileValidationFeatureMissing':
-            _LOGGER.error(letters['message'])
-            return []
+        # TODO Add validation / exception handling
+        # if letters['type'] == 'ProfileValidationFeatureMissing':
+        #     _LOGGER.error(letters['message'])
+        #     return []
 
         return letters
 
-    """
-    Retrieve relevant shipments
-    """
+    def get_letter(self, letter_id):
+        """ Retrieve single letter by id """
+
+        headers = {
+            'api-version': '4.6',
+            'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
+            'authorization': 'Bearer ' + self._access_token
+        }
+
+        response = requests.request(
+            'GET', LETTERS_URL + '/' + letter_id, headers=headers)
+
+        if response.status_code == 401:
+            self.refresh_token()
+            letter = self.get_letter(letter_id)
+        else:
+            letter = response.json()
+
+        return letter
+
     def get_relevant_shipments(self):
+        """ Retrieve not delivered shipments and shipments delivered today """
 
         shipments = self.get_shipments()
         relevant_shipments = []
@@ -159,10 +195,10 @@ class PostNL_API(object):
 
             # Check if package has been delivered today
             if shipment['status']['delivery']:
-                delivery_date = datetime.strptime( shipment['status']['delivery']['deliveryDate'][:19], "%Y-%m-%dT%H:%M:%S" )
+                delivery_date = datetime.strptime(
+                    shipment['status']['delivery']['deliveryDate'][:19], "%Y-%m-%dT%H:%M:%S")
 
                 if delivery_date.date() == datetime.today().date():
                     relevant_shipments.append(shipment)
-                    continue
 
         return relevant_shipments

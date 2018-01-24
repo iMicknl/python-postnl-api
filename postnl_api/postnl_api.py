@@ -43,7 +43,6 @@ class PostNL_API(object):
 
         except Exception:
             _LOGGER.exception('Credentials are wrong')
-            # return False
 
         # if response['error']:
         #     raise Exception(response['error']['error_description'])
@@ -202,3 +201,21 @@ class PostNL_API(object):
                     relevant_shipments.append(shipment)
 
         return relevant_shipments
+
+    def get_relevant_letters(self):
+        """ Retrieve letters with a future delivery date """
+
+        letters = self.get_letters()
+        relevant_letters = []
+
+        for letter in letters:
+            
+            # Check if letter is scheduled for delivery in the future
+            if letter['expectedDeliveryDate']:
+                expected_delivery_date = datetime.strptime(
+                    letter['expectedDeliveryDate'][:19], "%Y-%m-%dT%H:%M:%S")
+
+                if expected_delivery_date.date() == datetime.today().date():
+                    relevant_letters.append(letter)
+
+        return relevant_letters

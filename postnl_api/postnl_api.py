@@ -30,7 +30,7 @@ class PostNL_API(object):
         }
 
         headers = {
-            'api-version': '4.6',
+            'api-version': '4.7',
             'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
             'content-type': "application/x-www-form-urlencoded",
         }
@@ -63,7 +63,7 @@ class PostNL_API(object):
         }
 
         headers = {
-            'api-version': '4.6',
+            'api-version': '4.7',
             'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
             'content-type': "application/x-www-form-urlencoded",
         }
@@ -79,7 +79,7 @@ class PostNL_API(object):
         """ Retrieve shipments """
 
         headers = {
-            'api-version': '4.6',
+            'api-version': '4.7',
             'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
             'authorization': 'Bearer ' + self._access_token
         }
@@ -99,7 +99,7 @@ class PostNL_API(object):
         """ Retrieve single shipment by id """
 
         headers = {
-            'api-version': '4.6',
+            'api-version': '4.7',
             'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
             'authorization': 'Bearer ' + self._access_token
         }
@@ -119,7 +119,7 @@ class PostNL_API(object):
         """ Retrieve profile """
 
         headers = {
-            'api-version': '4.6',
+            'api-version': '4.7',
             'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
             'authorization': 'Bearer ' + self._access_token
         }
@@ -139,7 +139,7 @@ class PostNL_API(object):
         """ Retrieve letters """
 
         headers = {
-            'api-version': '4.6',
+            'api-version': '4.7',
             'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
             'authorization': 'Bearer ' + self._access_token
         }
@@ -164,7 +164,7 @@ class PostNL_API(object):
         """ Retrieve single letter by id """
 
         headers = {
-            'api-version': '4.6',
+            'api-version': '4.7',
             'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
             'authorization': 'Bearer ' + self._access_token
         }

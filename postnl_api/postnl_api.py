@@ -12,6 +12,12 @@ PROFILE_URL = BASE_URL + '/mobile/api/profile'
 LETTERS_URL = BASE_URL + '/mobile/api/letters'
 VALIDATE_LETTERS_URL = BASE_URL + '/mobile/api/letters/validation'
 
+DEFAULT_HEADER = {
+    'api-version': '4.7',
+    'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
+    'content-type': "application/x-www-form-urlencoded",
+}
+
 class PostNL_API(object):
     """ Interface class for the PostNL API """
 
@@ -28,22 +34,15 @@ class PostNL_API(object):
             'password': self._password
         }
 
-        headers = {
-            'api-version': '4.7',
-            'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
-            'content-type': "application/x-www-form-urlencoded",
-        }
-
         try:
             response = requests.request(
-                'POST', AUTHENTICATE_URL, data=payload, headers=headers)
-
+                'POST', AUTHENTICATE_URL, data=payload, headers=DEFAULT_HEADER)
             data = response.json()
 
         except Exception:
             raise(Exception)
 
-        if data['error']:
+        if 'error' in data:
             raise Exception(data['error'])
 
         self._access_token = data['access_token']
@@ -59,14 +58,8 @@ class PostNL_API(object):
             'refresh_token': self._refresh_token
         }
 
-        headers = {
-            'api-version': '4.7',
-            'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
-            'content-type': "application/x-www-form-urlencoded",
-        }
-
         response = requests.request(
-            'POST', AUTHENTICATE_URL, data=payload, headers=headers)
+            'POST', AUTHENTICATE_URL, data=payload, headers=DEFAULT_HEADER)
 
         data = response.json()
 
@@ -96,13 +89,11 @@ class PostNL_API(object):
         """ Retrieve single shipment by id """
 
         headers = {
-            'api-version': '4.7',
-            'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
             'authorization': 'Bearer ' + self._access_token
         }
 
         response = requests.request(
-            'GET', SHIPMENTS_URL + '/' + shipment_id, headers=headers)
+            'GET', SHIPMENTS_URL + '/' + shipment_id, headers={**headers, **DEFAULT_HEADER})
 
         if response.status_code == 401:
             self.refresh_token()
@@ -116,13 +107,11 @@ class PostNL_API(object):
         """ Retrieve profile """
 
         headers = {
-            'api-version': '4.7',
-            'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
             'authorization': 'Bearer ' + self._access_token
         }
 
         response = requests.request(
-            'GET', PROFILE_URL, headers=headers)
+            'GET', PROFILE_URL, headers={**headers, **DEFAULT_HEADER})
 
         if response.status_code == 401:
             self.refresh_token()
@@ -136,34 +125,30 @@ class PostNL_API(object):
         """ Retrieve letter validation status """
 
         headers = {
-            'api-version': '4.7',
-            'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
             'authorization': 'Bearer ' + self._access_token
         }
 
         response = requests.request(
-            'GET', VALIDATE_LETTERS_URL, headers=headers)
+            'GET', VALIDATE_LETTERS_URL, headers={**headers, **DEFAULT_HEADER})
 
         if response.status_code == 401:
             self.refresh_token()
             validation = self.validate_letters()
         else:
             validation = response.json()
-            
+
         return validation
 
     def get_letters(self):
         """ Retrieve letters """
 
         headers = {
-            'api-version': '4.7',
-            'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
             'authorization': 'Bearer ' + self._access_token
         }
 
         response = requests.request(
-            'GET', LETTERS_URL, headers=headers)
-
+            'GET', LETTERS_URL, headers={**headers, **DEFAULT_HEADER})
+            
         if response.status_code == 401:
             self.refresh_token()
             letters = self.get_letters()
@@ -181,13 +166,11 @@ class PostNL_API(object):
         """ Retrieve single letter by id """
 
         headers = {
-            'api-version': '4.7',
-            'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
             'authorization': 'Bearer ' + self._access_token
         }
 
         response = requests.request(
-            'GET', LETTERS_URL + '/' + letter_id, headers=headers)
+            'GET', LETTERS_URL + '/' + letter_id, headers={**headers, **DEFAULT_HEADER})
 
         if response.status_code == 401:
             self.refresh_token()
@@ -227,7 +210,7 @@ class PostNL_API(object):
         relevant_letters = []
 
         for letter in letters:
-            
+
             # Check if letter is scheduled for delivery in the future
             if letter['expectedDeliveryDate']:
                 expected_delivery_date = datetime.strptime(

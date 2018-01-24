@@ -15,7 +15,6 @@ VALIDATE_LETTERS_URL = BASE_URL + '/mobile/api/letters/validation'
 DEFAULT_HEADER = {
     'api-version': '4.7',
     'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
-    'content-type': "application/x-www-form-urlencoded",
 }
 
 class PostNL_API(object):

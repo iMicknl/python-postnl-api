@@ -47,9 +47,18 @@ class PostNL_API(object):
         self._access_token = data['access_token']
         self._refresh_token = data['refresh_token']
         self._token_expires_in = data['expires_in']
-        self._token_expires_at = datetime.now() + timedelta(0, data['expires_in'])
+        self._token_expires_at = datetime.now(
+        ) + timedelta(0, data['expires_in'])
 
-    def refresh_token(self):
+    def _is_token_expired(self):
+        """ Check if access token is expired """
+        if (datetime.now() > self._token_expires_at):
+            self._refresh_access_token()
+            return True
+
+        return False
+
+    def _refresh_access_token(self):
         """ Refresh access_token """
 
         payload = {
@@ -61,12 +70,14 @@ class PostNL_API(object):
         response = requests.request(
             'POST', AUTHENTICATE_URL, data=payload, headers=DEFAULT_HEADER)
 
-        data = response.json()
+        data = response.json()  # TODO Add error handling
 
         self._access_token = data['access_token']
 
     def get_shipments(self):
         """ Retrieve shipments """
+
+        self._is_token_expired()
 
         headers = {
             'authorization': 'Bearer ' + self._access_token
@@ -76,7 +87,7 @@ class PostNL_API(object):
             'GET', SHIPMENTS_URL, headers={**headers, **DEFAULT_HEADER})
 
         if response.status_code == 401:
-            self.refresh_token()
+            self._refresh_access_token()
             shipments = self.get_shipments()
         else:
             shipments = response.json()
@@ -86,6 +97,8 @@ class PostNL_API(object):
     def get_shipment(self, shipment_id):
         """ Retrieve single shipment by id """
 
+        self._is_token_expired()
+
         headers = {
             'authorization': 'Bearer ' + self._access_token
         }
@@ -94,7 +107,7 @@ class PostNL_API(object):
             'GET', SHIPMENTS_URL + '/' + shipment_id, headers={**headers, **DEFAULT_HEADER})
 
         if response.status_code == 401:
-            self.refresh_token()
+            self._refresh_access_token()
             shipments = self.get_shipment(shipment_id)
         else:
             shipments = response.json()
@@ -104,6 +117,8 @@ class PostNL_API(object):
     def get_profile(self):
         """ Retrieve profile """
 
+        self._is_token_expired()
+
         headers = {
             'authorization': 'Bearer ' + self._access_token
         }
@@ -112,7 +127,7 @@ class PostNL_API(object):
             'GET', PROFILE_URL, headers={**headers, **DEFAULT_HEADER})
 
         if response.status_code == 401:
-            self.refresh_token()
+            self._refresh_access_token()
             profile = self.get_profile()
         else:
             profile = response.json()
@@ -122,6 +137,8 @@ class PostNL_API(object):
     def validate_letters(self):
         """ Retrieve letter validation status """
 
+        self._is_token_expired()
+
         headers = {
             'authorization': 'Bearer ' + self._access_token
         }
@@ -130,7 +147,7 @@ class PostNL_API(object):
             'GET', VALIDATE_LETTERS_URL, headers={**headers, **DEFAULT_HEADER})
 
         if response.status_code == 401:
-            self.refresh_token()
+            self._refresh_access_token()
             validation = self.validate_letters()
         else:
             validation = response.json()
@@ -139,6 +156,8 @@ class PostNL_API(object):
 
     def get_letters(self):
         """ Retrieve letters """
+        
+        self._is_token_expired()
 
         headers = {
             'authorization': 'Bearer ' + self._access_token
@@ -146,9 +165,9 @@ class PostNL_API(object):
 
         response = requests.request(
             'GET', LETTERS_URL, headers={**headers, **DEFAULT_HEADER})
-            
+
         if response.status_code == 401:
-            self.refresh_token()
+            self._refresh_access_token()
             letters = self.get_letters()
         else:
             letters = response.json()
@@ -163,6 +182,8 @@ class PostNL_API(object):
     def get_letter(self, letter_id):
         """ Retrieve single letter by id """
 
+        self._is_token_expired()
+
         headers = {
             'authorization': 'Bearer ' + self._access_token
         }
@@ -173,9 +194,9 @@ class PostNL_API(object):
         if response.status_code == 200:
             letter = response.json()
         elif response.status_code == 401:
-            self.refresh_token()
+            self._refresh_access_token()
             letter = self.get_letter(letter_id)
-        else: 
+        else:
             raise Exception('Unknown Error')
 
         return letter

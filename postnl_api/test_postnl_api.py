@@ -1,6 +1,7 @@
 import argparse
 from postnl_api import PostNL_API
 
+
 def main():
     """Main function."""
     parser = argparse.ArgumentParser(description="Run the test for PostNL_API")
@@ -19,7 +20,7 @@ def main():
     # Get relevant shipments
     print("Getting shipments")
     shipments = postnl.get_relevant_shipments()
-    print("Number of shipments: ",len(shipments))
+    print("Number of shipments: ", len(shipments))
     print("Listing shipments:")
     for shipment in shipments:
         print (shipment['key'])
@@ -27,9 +28,10 @@ def main():
     # Get letters
     print("Getting letters")
     letters = postnl.get_letters()
-    print("Number of letters: ",len(letters))
+    print("Number of letters: ", len(letters))
     print("Listing letters:")
     print (letters)
+
 
 if __name__ == '__main__':
     main()

@@ -1,7 +1,8 @@
 """ Python wrapper for the PostNL API """
 
-import logging
 from datetime import datetime, timedelta
+import re
+
 import requests
 
 BASE_URL = 'https://jouw.postnl.nl'
@@ -16,6 +17,11 @@ DEFAULT_HEADER = {
     'api-version': '4.7',
     'user-agent': 'PostNL/1 CFNetwork/889.3 Darwin/17.2.0',
 }
+
+
+class UnauthorizedException(Exception):
+    pass
+
 
 class PostNL_API(object):
     """ Interface class for the PostNL API """
@@ -39,10 +45,10 @@ class PostNL_API(object):
             data = response.json()
 
         except Exception:
-            raise(Exception)
+            raise(UnauthorizedException())
 
         if 'error' in data:
-            raise Exception(data['error'])
+            raise UnauthorizedException(data['error'])
 
         self._access_token = data['access_token']
         self._refresh_token = data['refresh_token']
@@ -70,9 +76,24 @@ class PostNL_API(object):
         response = requests.request(
             'POST', AUTHENTICATE_URL, data=payload, headers=DEFAULT_HEADER)
 
-        data = response.json()  # TODO Add error handling
+        data = response.json()
 
         self._access_token = data['access_token']
+
+    def parse_datetime(self, text, dateFormat='%d-%m-%Y', timeFormat='%H:%M'):
+
+        def parse_date(date):
+            return datetime.strptime(date.group(1)
+                                     .replace(' ', '')[:-6], '%Y-%m-%dT%H:%M:%S').strftime(dateFormat)
+
+        def parse_time(date):
+            return datetime.strptime(date.group(1)
+                                     .replace(' ', '')[:-6], '%Y-%m-%dT%H:%M:%S').strftime(timeFormat)
+
+        text = re.sub(r'{(?:Date|dateAbs):(.*?)}', parse_date, text)
+        text = re.sub(r'{(?:time):(.*?)}', parse_time, text)
+
+        return text
 
     def get_shipments(self):
         """ Retrieve shipments """
@@ -156,7 +177,7 @@ class PostNL_API(object):
 
     def get_letters(self):
         """ Retrieve letters """
-        
+
         self._is_token_expired()
 
         headers = {
@@ -237,7 +258,7 @@ class PostNL_API(object):
                 expected_delivery_date = datetime.strptime(
                     letter['expectedDeliveryDate'][:19], "%Y-%m-%dT%H:%M:%S")
 
-                if expected_delivery_date.date() == datetime.today().date():
+                if expected_delivery_date.date() >= datetime.today().date():
                     relevant_letters.append(letter)
 
         return relevant_letters

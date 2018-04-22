@@ -17,8 +17,12 @@ postnl = PostNL_API('email@domain.com', 'password')
 shipments = postnl.get_relevant_shipments()
 
 for shipment in shipments:
-    print (shipment['key'])
+    name = shipment['settings']['title']    
+    status = shipment['status']['formatted']['short']
+    status = postnl.parse_datetime(status, '%d-%m-%Y', '%H:%M')
 
+    print (shipment['key'] + ' ' + name + ' ' + status)
+    
 # Get letters
 letters = postnl.get_letters()
 print (letters)

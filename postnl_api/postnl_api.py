@@ -236,7 +236,8 @@ class PostNL_API(object):
                 continue
 
             # Check if package has been delivered today
-            if shipment['status']['delivery']:
+            if shipment['status']['delivery'] and \
+               shipment['status']['delivery']['deliveryDate']:
                 delivery_date = datetime.strptime(
                     shipment['status']['delivery']['deliveryDate'][:19], "%Y-%m-%dT%H:%M:%S")
 

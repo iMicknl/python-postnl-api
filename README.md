@@ -50,5 +50,9 @@ for letter in letters:
 ## Changelog
 See the [CHANGELOG](./CHANGELOG.md) file.
 
+## Contributors
+- [@eavanvalkenburg](https://github.com/eavanvalkenburg)
+- [@peternijssen](https://github.com/peternijssen)
+
 ## License
 MIT

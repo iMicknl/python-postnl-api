@@ -4,7 +4,7 @@ setup(
     name="postnl_api",
     version="1.2.0",
     description="Python wrapper for the PostNL API, a way to track packages and letters.",
-    long_description=long_description=open('README.md').read(),
+    long_description=open('README.md').read(),
     long_description_content_type="text/markdown",
     url="https://github.com/imicknl/python-postnl-api",
     author="Mick Vleeshouwer",

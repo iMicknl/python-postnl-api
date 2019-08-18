@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.2.0 - 2019-08-08
+### Added
+- Created packages and letters classes
+- Isoformat parsed datetime for delivery and planned dates
+- Added properties for is_delivered and delivery_today
+- Renamed methods to get_X with X: deliveries, distributions and letters
+
 ## 1.0.2 - 2018-05-28
 ### Fixed
 - Traceback when no deliveryDate is found in shipment

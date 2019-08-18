@@ -19,19 +19,29 @@ from postnl_api import PostNL_API
 # Login using your jouw.postnl.nl credentials
 postnl = PostNL_API('email@domain.com', 'password')
 
-# Get relevant shipments
-shipments = postnl.get_relevant_shipments()
+# Get relevant deliveries
+print("Getting relevant deliveries")
+rel_deliveries = postnl.get_relevant_deliveries()
+for delivery in rel_deliveries:
+    print(delivery.debug_string)
 
-for shipment in shipments:
-    name = shipment['settings']['title']    
-    status = shipment['status']['formatted']['short']
-    status = postnl.parse_datetime(status, '%d-%m-%Y', '%H:%M')
+# Get relevant deliveries
+print("Getting all deliveries")
+all_deliveries = postnl.get_deliveries()
+for delivery in all_deliveries:
+    print(delivery.debug_string)
 
-    print (shipment['key'] + ' ' + name + ' ' + status)
-    
+# Get relevant deliveries
+print("Getting all distributions (sent packages)")
+distributions = postnl.get_distributions()
+for distribution in distributions:
+    print(distribution.debug_string)
+
 # Get letters
+print("Getting all letters, if that function is turned on")
 letters = postnl.get_letters()
-print (letters)
+for letter in letters:
+    print(letter.debug_string)
 ```
 
 ## Miscellaneous

@@ -25,7 +25,7 @@ def main():
     print("Listing packages:")
     [print(p) for p in packages]
 
-    if api.is_letters_activated():
+    if api.is_letters_activated:
         letters = api.get_letters()
         print("Number of letters: ", len(letters))
         print("Listing letters:")

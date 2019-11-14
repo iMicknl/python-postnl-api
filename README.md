@@ -53,6 +53,7 @@ See the [CHANGELOG](./CHANGELOG.md) file.
 ## Contributors
 - [@eavanvalkenburg](https://github.com/eavanvalkenburg)
 - [@peternijssen](https://github.com/peternijssen)
+- [@IcyPalm](https://github.com/IcyPalm)
 
 ## License
 MIT

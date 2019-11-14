@@ -34,7 +34,7 @@ VALIDATE_LETTERS_URL = BASE_URL + "/mobile/api/letters/validation"
 ## DELETE LETTER
 ## DELETE /mobile/api/letters/{letter-barcode}
 
-DEFAULT_HEADER = {"api-version": "4.16", "X-Client-Library": "python-postnl-api"}
+DEFAULT_HEADER = {"api-version": "4.16", "X-Client-Library": "python-postnl-api", "User-Agent": "PostNL/Android/6.5.1"}
 
 REFRESH_RATE = 120
 

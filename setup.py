@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="postnl_api",
-    version="1.2.1",
+    version="1.2.2",
     description="Python wrapper for the PostNL API, a way to track packages and letters.",
     long_description=long_description,
     long_description_content_type="text/markdown",

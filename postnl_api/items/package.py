@@ -19,6 +19,7 @@ class Package(object):
         if (
             data.get("status").get("enroute") is not None
             and data.get("status").get("enroute").get("timeframe") is not None
+            and data.get("status").get("enroute").get("timeframe").get("date") is not None
         ):
             self.planned_date = datetime.fromisoformat(
                 data.get("status").get("enroute").get("timeframe").get("date")

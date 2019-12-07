@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.2.3 - 2019-12-7
+### Fixed
+- Change endpoint for token retrievement
+- Change User Agent and Api Version
+
 ## 1.2.2 - 2019-11-13
 ### Fixed
 - Request by adding User-Agent since PostNL seems to require that now

@@ -12,7 +12,7 @@ from postnl_api.items.letter import Letter
 
 BASE_URL = "https://jouw.postnl.nl"
 
-AUTHENTICATE_URL = BASE_URL + "/mobile/token"
+AUTHENTICATE_URL = BASE_URL + "/web/token"
 SHIPMENTS_URL = BASE_URL + "/mobile/api/shipments"
 PROFILE_URL = BASE_URL + "/mobile/api/profile"
 LETTERS_URL = BASE_URL + "/mobile/api/letters"
@@ -34,7 +34,7 @@ VALIDATE_LETTERS_URL = BASE_URL + "/mobile/api/letters/validation"
 ## DELETE LETTER
 ## DELETE /mobile/api/letters/{letter-barcode}
 
-DEFAULT_HEADER = {"api-version": "4.16", "X-Client-Library": "python-postnl-api", "User-Agent": "PostNL/Android/6.5.1"}
+DEFAULT_HEADER = {"Api-Version":"4.18", "User-Agent": "PostNL/iOS/4.32.0"}
 
 REFRESH_RATE = 120
 
